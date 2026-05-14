@@ -19,21 +19,27 @@ type Product = {
 const WA = 'https://wa.me/5492291400000?text=Hola!%20Me%20interesa%20conocer%20sus%20productos.'
 
 const FALLBACK_IMGS: Record<string, string> = {
-  Lácteos:   'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',
-  Enlatados: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80',
-  Bebidas:   'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
-  Limpieza:  'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80',
-  Freezer:   'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80',
-  Almacén:   'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
+  'Yerba':            'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+  'Pastas Secas':     'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80',
+  'Bebidas':          'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
+  'Infusiones':       'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80',
+  'Papel Higiénico':  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80',
+  'Limpieza':         'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80',
+  'Cuidado Personal': 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80',
+  'Alcohol':          'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80',
+  'Harina':           'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',
 }
 
 const CATEGORIES = [
-  { label: 'Almacén',   icon: '🌾', img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',  db: 'Almacén'  },
-  { label: 'Bebidas',   icon: '🥤', img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',  db: 'Bebidas'  },
-  { label: 'Limpieza',  icon: '🧴', img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80', db: 'Limpieza'  },
-  { label: 'Congelados',icon: '❄️', img: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&q=80',  db: 'Freezer'  },
-  { label: 'Lácteos',   icon: '🥛', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',  db: 'Lácteos'  },
-  { label: 'Enlatados', icon: '🥫', img: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80', db: 'Enlatados' },
+  { label: 'Yerba',            icon: '🧉', img: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80', db: 'Yerba'            },
+  { label: 'Pastas Secas',     icon: '🍝', img: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80', db: 'Pastas Secas'     },
+  { label: 'Bebidas',          icon: '🥤', img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80', db: 'Bebidas'          },
+  { label: 'Infusiones',       icon: '🍵', img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80', db: 'Infusiones'       },
+  { label: 'Papel Higiénico',  icon: '🧻', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80', db: 'Papel Higiénico' },
+  { label: 'Limpieza',         icon: '🧴', img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80', db: 'Limpieza'         },
+  { label: 'Cuidado Personal', icon: '🧼', img: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80', db: 'Cuidado Personal' },
+  { label: 'Alcohol',          icon: '🧪', img: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80', db: 'Alcohol'          },
+  { label: 'Harina',           icon: '🌾', img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80', db: 'Harina'           },
 ]
 
 const BRANDS = [
@@ -178,7 +184,7 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-5 gap-3">
             {CATEGORIES.map(cat => (
               <button
                 key={cat.label}

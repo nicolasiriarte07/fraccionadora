@@ -7,132 +7,104 @@ const adapter = new PrismaPg(process.env.DATABASE_URL!)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  const adminPass = await bcrypt.hash('admin123', 10)
+  // ── Users ────────────────────────────────────────────────────────────────
+  const adminPass  = await bcrypt.hash('admin123', 10)
   const clientPass = await bcrypt.hash('cliente123', 10)
 
   await prisma.user.upsert({
     where: { email: 'admin@distribuidora.com' },
     update: {},
-    create: {
-      name: 'Administrador',
-      email: 'admin@distribuidora.com',
-      password: adminPass,
-      role: 'ADMIN',
-    },
+    create: { name: 'Administrador', email: 'admin@distribuidora.com', password: adminPass, role: 'ADMIN' },
   })
 
   await prisma.user.upsert({
     where: { email: 'cliente@test.com' },
     update: {},
-    create: {
-      name: 'Cliente Demo',
-      email: 'cliente@test.com',
-      password: clientPass,
-      role: 'CLIENT',
-      type: 'familia',
-    },
+    create: { name: 'Cliente Demo', email: 'cliente@test.com', password: clientPass, role: 'CLIENT' },
   })
 
   // promote owner account to ADMIN
   await prisma.user.upsert({
     where: { email: 'nicolasiriarte07@gmail.com' },
     update: { role: 'ADMIN' },
-    create: {
-      name: 'Nicolás Iriarte',
-      email: 'nicolasiriarte07@gmail.com',
-      password: adminPass,
-      role: 'ADMIN',
-    },
+    create: { name: 'Nicolás Iriarte', email: 'nicolasiriarte07@gmail.com', password: adminPass, role: 'ADMIN' },
   })
 
+  // ── Reset products then re-seed ──────────────────────────────────────────
+  await prisma.orderItem.deleteMany({})
+  await prisma.order.deleteMany({})
+  await prisma.product.deleteMany({})
+
   const products = [
-    // Lácteos
+    // ── Yerba ──────────────────────────────────────────────────────────────
     {
-      id: 'lacticos-leche-serenisima-1l',
-      name: 'Leche La Serenísima Entera 1L',
-      description: 'Leche entera larga vida, caja por 12 unidades',
-      category: 'Lácteos',
+      id: 'yerba-taragui-500g',
+      name: 'Yerba Mate Taragüi 500g',
+      description: 'Con palo, blend clásico',
+      category: 'Yerba',
+      unit: 'caja x20',
+      price: 38000,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+    },
+    {
+      id: 'yerba-cruz-malta-1kg',
+      name: 'Yerba Mate Cruz de Malta 1kg',
+      description: 'Tradicional con palo',
+      category: 'Yerba',
+      unit: 'caja x10',
+      price: 41000,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+    },
+    {
+      id: 'yerba-cbse-500g',
+      name: 'Yerba CBSé Clásica 500g',
+      description: 'Con palo, suave al paladar',
+      category: 'Yerba',
+      unit: 'caja x20',
+      price: 36000,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+    },
+
+    // ── Pastas Secas ────────────────────────────────────────────────────────
+    {
+      id: 'pasta-matarazzo-spaghetti-500g',
+      name: 'Fideos Matarazzo Spaghetti 500g',
+      description: 'De sémola de trigo durum',
+      category: 'Pastas Secas',
+      unit: 'caja x20',
+      price: 32000,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80',
+    },
+    {
+      id: 'pasta-lucchetti-moñitos-500g',
+      name: 'Fideos Lucchetti Moñitos 500g',
+      description: 'Pastas cortas de sémola',
+      category: 'Pastas Secas',
+      unit: 'caja x20',
+      price: 30000,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80',
+    },
+    {
+      id: 'pasta-don-vicente-tallarines-500g',
+      name: 'Tallarines Don Vicente 500g',
+      description: 'Fideos al huevo artesanales',
+      category: 'Pastas Secas',
       unit: 'caja x12',
-      price: 18500,
-      featured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',
-    },
-    {
-      id: 'lacticos-yogur-danone-190g',
-      name: 'Yogur Danone Entero Natural 190g',
-      description: 'Yogur firme natural, pack por 6 unidades',
-      category: 'Lácteos',
-      unit: 'pack x6',
-      price: 7200,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80',
-    },
-    {
-      id: 'lacticos-queso-finlandia-400g',
-      name: 'Queso Cremoso Finlandia 400g',
-      description: 'Queso untable cremoso, unidad',
-      category: 'Lácteos',
-      unit: 'unidad',
-      price: 3800,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1618164435735-413d3b066c9a?w=400&q=80',
-    },
-    {
-      id: 'lacticos-manteca-la-serenisima-200g',
-      name: 'Manteca La Serenísima 200g',
-      description: 'Manteca sin sal, pack por 12 unidades',
-      category: 'Lácteos',
-      unit: 'pack x12',
-      price: 21600,
-      featured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400&q=80',
-    },
-    // Enlatados
-    {
-      id: 'enlatados-tomate-arcor-400g',
-      name: 'Tomate Triturado Arcor 400g',
-      description: 'Tomate triturado natural sin sal, caja por 24',
-      category: 'Enlatados',
-      unit: 'caja x24',
-      price: 28800,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80',
-    },
-    {
-      id: 'enlatados-atun-alco-170g',
-      name: 'Atún al Natural Alco 170g',
-      description: 'Atún en agua con sal, caja por 12 unidades',
-      category: 'Enlatados',
-      unit: 'caja x12',
-      price: 19200,
-      featured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?w=400&q=80',
-    },
-    {
-      id: 'enlatados-choclo-verde-400g',
-      name: 'Choclo en Granos Verde 400g',
-      description: 'Choclo al natural sin sal, caja por 24',
-      category: 'Enlatados',
-      unit: 'caja x24',
       price: 22800,
       featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80',
     },
+
+    // ── Bebidas ─────────────────────────────────────────────────────────────
     {
-      id: 'enlatados-arvejas-campagna-400g',
-      name: 'Arvejas Campagna 400g',
-      description: 'Arvejas en conserva al natural, caja por 24',
-      category: 'Enlatados',
-      unit: 'caja x24',
-      price: 19200,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1585664811087-47f65abbad64?w=400&q=80',
-    },
-    // Bebidas
-    {
-      id: 'bebidas-agua-villavicencio-500ml',
+      id: 'bebida-villavicencio-500ml',
       name: 'Agua Mineral Villavicencio 500ml',
-      description: 'Agua mineral sin gas, pack por 12',
+      description: 'Agua mineral sin gas',
       category: 'Bebidas',
       unit: 'pack x12',
       price: 9600,
@@ -140,9 +112,9 @@ async function main() {
       imageUrl: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&q=80',
     },
     {
-      id: 'bebidas-coca-cola-2250ml',
+      id: 'bebida-coca-cola-225l',
       name: 'Coca-Cola 2,25L',
-      description: 'Gaseosa sabor cola retornable, caja por 6',
+      description: 'Gaseosa sabor cola',
       category: 'Bebidas',
       unit: 'caja x6',
       price: 14400,
@@ -150,20 +122,75 @@ async function main() {
       imageUrl: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=400&q=80',
     },
     {
-      id: 'bebidas-jugo-cepita-1l',
+      id: 'bebida-cepita-naranja-1l',
       name: 'Jugo Cepita Naranja 1L',
-      description: 'Jugo de naranja sin azúcar, caja por 12',
+      description: 'Jugo de naranja sin azúcar',
       category: 'Bebidas',
       unit: 'caja x12',
       price: 21600,
       featured: false,
       imageUrl: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&q=80',
     },
-    // Limpieza
+
+    // ── Infusiones ──────────────────────────────────────────────────────────
+    {
+      id: 'infusion-te-lipton-20sob',
+      name: 'Té Lipton 20 sobres',
+      description: 'Té negro selecto',
+      category: 'Infusiones',
+      unit: 'caja x24',
+      price: 28800,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80',
+    },
+    {
+      id: 'infusion-cafe-virginia-200g',
+      name: 'Café La Virginia Instantáneo 200g',
+      description: 'Café soluble instantáneo',
+      category: 'Infusiones',
+      unit: 'caja x12',
+      price: 43200,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&q=80',
+    },
+    {
+      id: 'infusion-mate-cocido-taragui-50sob',
+      name: 'Mate Cocido Taragüi 50 sobres',
+      description: 'Mate listo para preparar',
+      category: 'Infusiones',
+      unit: 'caja x12',
+      price: 26400,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&q=80',
+    },
+
+    // ── Papel Higiénico ─────────────────────────────────────────────────────
+    {
+      id: 'papel-elite-suave-4rollos',
+      name: 'Papel Higiénico Elite Suave 4 rollos',
+      description: 'Doble hoja, máxima suavidad',
+      category: 'Papel Higiénico',
+      unit: 'pack x10',
+      price: 48000,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80',
+    },
+    {
+      id: 'papel-rollo-cocina-servihogar-2u',
+      name: 'Rollo de Cocina Servihogar 2 rollos',
+      description: 'Absorbente y resistente',
+      category: 'Papel Higiénico',
+      unit: 'pack x12',
+      price: 31200,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80',
+    },
+
+    // ── Limpieza ────────────────────────────────────────────────────────────
     {
       id: 'limpieza-detergente-magistral-5l',
       name: 'Detergente Magistral 5L',
-      description: 'Detergente concentrado para vajilla, bidón',
+      description: 'Concentrado para vajilla',
       category: 'Limpieza',
       unit: 'bidón',
       price: 8500,
@@ -173,7 +200,7 @@ async function main() {
     {
       id: 'limpieza-lavandina-ayudin-1l',
       name: 'Lavandina Ayudín 1L',
-      description: 'Lavandina concentrada 55g/L, caja por 12',
+      description: 'Concentrada 55g/L',
       category: 'Limpieza',
       unit: 'caja x12',
       price: 13200,
@@ -183,100 +210,98 @@ async function main() {
     {
       id: 'limpieza-jabon-drive-1kg',
       name: 'Jabón en Polvo Drive 1kg',
-      description: 'Para ropa blanca y color, bolsa por 6',
+      description: 'Para ropa blanca y color',
       category: 'Limpieza',
       unit: 'bolsa x6',
       price: 19200,
       featured: false,
       imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
     },
-    // Freezer
+
+    // ── Cuidado Personal ────────────────────────────────────────────────────
     {
-      id: 'freezer-milanesas-vaca-500g',
-      name: 'Milanesas de Vaca Congeladas 500g',
-      description: 'Milanesas rebozadas listas para freír, pack x10',
-      category: 'Freezer',
-      unit: 'pack x10',
-      price: 12500,
-      featured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80',
-    },
-    {
-      id: 'freezer-pollo-granja-del-sol-1kg',
-      name: 'Pollo Trozado Granja del Sol 1kg',
-      description: 'Pollo trozado congelado sin menudos',
-      category: 'Freezer',
-      unit: 'unidad',
-      price: 7200,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=400&q=80',
-    },
-    {
-      id: 'freezer-hamburguesas-quick-400g',
-      name: 'Hamburguesas Quick 4u 400g',
-      description: 'Hamburguesas de vacuno, pack por 12 cajas',
-      category: 'Freezer',
+      id: 'cuidado-jabon-palmolive-3x90g',
+      name: 'Jabón de Tocador Palmolive 3×90g',
+      description: 'Hidratante con aloe vera',
+      category: 'Cuidado Personal',
       unit: 'caja x12',
-      price: 74400,
+      price: 22800,
       featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80',
-    },
-    // Almacén
-    {
-      id: 'almacen-arroz-gallo-1kg',
-      name: 'Arroz Largo Fino Gallo 1kg',
-      category: 'Almacén',
-      description: 'Arroz largo fino tipo A, bolsa por 12',
-      unit: 'bolsa x12',
-      price: 26400,
-      featured: true,
-      imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80',
     },
     {
-      id: 'almacen-fideos-matarazzo-500g',
-      name: 'Fideos Matarazzo Spaghetti 500g',
-      description: 'Fideos de sémola de trigo, caja por 20',
-      category: 'Almacén',
-      unit: 'caja x20',
-      price: 32000,
-      featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1551462147-ff29053bfc14?w=400&q=80',
-    },
-    {
-      id: 'almacen-aceite-cocinero-1500ml',
-      name: 'Aceite Girasol Cocinero 1,5L',
-      description: 'Aceite de girasol refinado, caja por 12',
-      category: 'Almacén',
+      id: 'cuidado-shampoo-hs-400ml',
+      name: 'Shampoo Head & Shoulders 400ml',
+      description: 'Anticaspa clásico',
+      category: 'Cuidado Personal',
       unit: 'caja x12',
-      price: 63600,
+      price: 62400,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80',
+    },
+    {
+      id: 'cuidado-desodorante-rexona-150ml',
+      name: 'Desodorante Rexona 150ml',
+      description: 'Protección 48h',
+      category: 'Cuidado Personal',
+      unit: 'caja x12',
+      price: 55200,
       featured: false,
-      imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400&q=80',
+    },
+
+    // ── Alcohol ─────────────────────────────────────────────────────────────
+    {
+      id: 'alcohol-etilico-96-1l',
+      name: 'Alcohol Etílico 96° 1L',
+      description: 'Para uso doméstico y profesional',
+      category: 'Alcohol',
+      unit: 'caja x12',
+      price: 40800,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80',
+    },
+    {
+      id: 'alcohol-gel-500ml',
+      name: 'Alcohol en Gel 500ml',
+      description: 'Higienizante de manos 70°',
+      category: 'Alcohol',
+      unit: 'caja x12',
+      price: 33600,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&q=80',
+    },
+
+    // ── Harina ──────────────────────────────────────────────────────────────
+    {
+      id: 'harina-000-favorita-1kg',
+      name: 'Harina 000 Favorita 1kg',
+      description: 'Para pan y masas',
+      category: 'Harina',
+      unit: 'bolsa x25',
+      price: 60000,
+      featured: true,
+      imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',
+    },
+    {
+      id: 'harina-0000-cañuelas-1kg',
+      name: 'Harina 0000 Cañuelas 1kg',
+      description: 'Para repostería y pastelería',
+      category: 'Harina',
+      unit: 'bolsa x25',
+      price: 62500,
+      featured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80',
     },
   ]
 
   for (const p of products) {
-    await prisma.product.upsert({
-      where: { id: p.id },
-      update: {
-        name: p.name,
-        description: p.description,
-        category: p.category,
-        unit: p.unit,
-        price: p.price,
-        featured: p.featured,
-        imageUrl: p.imageUrl,
-        available: true,
-      },
-      create: {
-        ...p,
-        available: true,
-      },
-    })
+    await prisma.product.create({ data: { ...p, available: true } })
   }
 
-  console.log('✓ Seed complete')
+  console.log(`✓ Seed complete — ${products.length} productos`)
 }
 
 main()
-  .catch((e) => { console.error(e); process.exit(1) })
+  .catch(e => { console.error(e); process.exit(1) })
   .finally(() => prisma.$disconnect())
