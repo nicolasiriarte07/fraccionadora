@@ -1,374 +1,222 @@
 import {
-  Document, Page, View, Text, Image, StyleSheet,
+  Document, Page, View, Text, Image, StyleSheet, Svg, Polygon,
 } from '@react-pdf/renderer'
 
-// ── Colors ────────────────────────────────────────────────────────────────────
-const VD = '#2D1B69'   // violet dark
-const VM = '#6B3FA0'   // violet medium
-const VL = '#9B6FD4'   // violet light
-const GY = '#666666'   // gray
-const WH = '#FFFFFF'   // white
-const RD = '#E53E3E'   // red (MARCA badge)
+// ── Brand colors ──────────────────────────────────────────────────────────────
+const VD = '#2D1B69'
+const VM = '#6B3FA0'
+const VL = '#9B6FD4'
+const VX = '#1a0f3e'   // extra dark for oferta card bg
+const GY = '#666666'
+const LG = '#999999'
+const WH = '#FFFFFF'
+const RD = '#CC3300'
 
 export type PromoItem = {
   id: string
   name: string
   unit: string
   imageUrl: string | null
-  isOferta: boolean
+  ofertaType: 'principal' | 'secundaria' | null
   isMarca: boolean
   promoPrice: string
-  minUnits: string
+  minUnitsBadge: string   // e.g. "DESDE 6 UNIDADES"
   pricePerUnit: string
-  pricePerUnitLabel: 'KG' | 'LT' | 'UN'
+  pricePerUnitLabel: 'KG' | 'LT' | 'UN' | 'MT'
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   page: {
     flexDirection: 'column',
-    backgroundColor: '#F0EDF8',
+    backgroundColor: '#EEEBF7',
+    padding: 0,
     fontFamily: 'Helvetica',
   },
 
-  // HEADER
+  // ── HEADER ──────────────────────────────────────────────────────────────────
   header: {
     backgroundColor: VD,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    minHeight: 62,
+    height: 68,
+    paddingHorizontal: 14,
   },
-  headerLeft: {
-    width: '28%',
+  hLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '30%',
     gap: 8,
   },
-  logoBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderColor: WH,
+  badge: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: VM,
+    borderWidth: 2.5,
+    borderColor: WH,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoFC: {
-    color: WH,
-    fontSize: 16,
-    fontFamily: 'Helvetica-Bold',
-  },
-  logoCarhue: {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: 4,
-    letterSpacing: 0.8,
-    marginTop: -2,
-  },
-  logoCompanyBlock: {
-    flex: 1,
-  },
-  logoCompanyName: {
-    color: WH,
-    fontSize: 7.5,
-    fontFamily: 'Helvetica-Bold',
-    letterSpacing: 0.5,
-  },
-  logoCompanySub: {
-    color: 'rgba(255,255,255,0.55)',
-    fontSize: 5.5,
-    letterSpacing: 0.3,
-    marginTop: 1,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 8,
-  },
-  headerCenterText: {
-    color: WH,
-    fontSize: 10.5,
-    textAlign: 'center',
-  },
-  headerHighlight: {
-    color: VL,
-    fontFamily: 'Helvetica-Bold',
-  },
-  headerRight: {
-    width: '28%',
-    alignItems: 'flex-end',
-  },
-  deliveryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 2,
-  },
-  deliveryTitle: {
-    color: WH,
-    fontSize: 7,
-    fontFamily: 'Helvetica-Bold',
-  },
-  deliveryCities: {
-    color: VL,
-    fontSize: 6.5,
-    textAlign: 'right',
-  },
+  badgeStars: { color: WH, fontSize: 7, textAlign: 'center', marginBottom: -1 },
+  badgeFC: { color: WH, fontSize: 18, fontFamily: 'Helvetica-Bold', textAlign: 'center', marginTop: -2 },
+  badgeCarhue: { color: 'rgba(255,255,255,0.6)', fontSize: 4, letterSpacing: 0.6, textAlign: 'center' },
+  hCompany: { flex: 1 },
+  hName: { color: WH, fontSize: 10, fontFamily: 'Helvetica-Bold', letterSpacing: 0.3 },
+  hSub: { color: 'rgba(255,255,255,0.5)', fontSize: 6, letterSpacing: 0.4, marginTop: 1 },
+  hDivider: { width: 1, height: 36, backgroundColor: 'rgba(255,255,255,0.2)', marginHorizontal: 10 },
+  hCenter: { flex: 1, alignItems: 'center' },
+  hTagline: { color: WH, fontSize: 11, textAlign: 'center' },
+  hHighlight: { color: VL, fontFamily: 'Helvetica-Bold' },
+  hRight: { width: '28%', alignItems: 'flex-end', gap: 4 },
+  hTruck: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  hTruckIcon: { width: 26, height: 18, backgroundColor: VD },
+  hEntregas: { color: WH, fontSize: 7, fontFamily: 'Helvetica-Bold' },
+  hCities: { color: VL, fontSize: 6.5, textAlign: 'right' },
 
-  // SUBHEADER
+  // ── SUBHEADER ───────────────────────────────────────────────────────────────
   subHeader: {
     backgroundColor: WH,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 7,
+    height: 28,
+    paddingHorizontal: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E2DAF5',
+    borderBottomColor: '#DDD8F5',
   },
-  catalogBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  catalogText: {
-    fontSize: 9.5,
-    fontFamily: 'Helvetica-Bold',
-    color: '#1a1a1a',
-    letterSpacing: 0.5,
-  },
-  searchBar: {
-    flex: 1,
-    marginHorizontal: 16,
-    borderWidth: 1,
-    borderColor: '#D8D0F0',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    backgroundColor: '#F8F6FF',
-  },
-  searchText: {
-    fontSize: 7.5,
-    color: '#aaa',
-  },
-  waBtn: {
-    backgroundColor: VM,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  waBtnText: {
-    color: WH,
-    fontSize: 7,
-    fontFamily: 'Helvetica-Bold',
-    letterSpacing: 0.3,
-  },
+  sCatalogo: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  sCatalogoText: { fontSize: 9, fontFamily: 'Helvetica-Bold', color: '#111', letterSpacing: 0.5 },
+  sSearch: { flex: 1, marginHorizontal: 14, borderWidth: 1, borderColor: '#D0C8EE', borderRadius: 9, paddingHorizontal: 8, paddingVertical: 3, backgroundColor: '#F8F6FF' },
+  sSearchText: { fontSize: 7, color: '#BBB' },
+  sWaBtn: { backgroundColor: VM, borderRadius: 9, paddingHorizontal: 9, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 3 },
+  sWaText: { color: WH, fontSize: 6.5, fontFamily: 'Helvetica-Bold' },
 
-  // CONTENT
+  // ── CONTENT WRAPPER ─────────────────────────────────────────────────────────
   content: {
     flex: 1,
-    padding: 8,
-    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    gap: 4,
   },
 
-  // BIG OFERTA CARD
-  bigCardWrap: {
-    width: '38%',
-    marginRight: 6,
+  // ── TOP / BOTTOM HERO ROWS ───────────────────────────────────────────────────
+  heroRow: {
+    flexDirection: 'row',
+    height: 172,
+    gap: 4,
   },
-  bigCard: {
+  // The merged oferta card (50% of row = 2 cols)
+  ofertaMergedCard: {
+    width: '50%',
+    flexDirection: 'row',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  ofertaImageHalf: {
+    width: '48%',
+    position: 'relative',
+    backgroundColor: VX,
+  },
+  ofertaImg: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0,
+    objectFit: 'cover',
+  },
+  ofertaImgOverlay: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0,
+    background: 'linear-gradient(to right, rgba(26,15,62,0.4) 0%, transparent 100%)',
+  },
+  ofertaTextHalf: {
+    flex: 1,
+    backgroundColor: WH,
+    padding: 9,
+    justifyContent: 'space-between',
+  },
+  ofertaProductName: {
+    fontSize: 10.5,
+    fontFamily: 'Helvetica-Bold',
+    color: '#111',
+    textTransform: 'uppercase',
+    lineHeight: 1.25,
+    marginBottom: 2,
+  },
+  ofertaUnit: { fontSize: 7.5, color: GY, marginBottom: 5 },
+  ofertaPricePerKg: { fontSize: 7, color: LG, marginBottom: 4 },
+
+  // Small vertical cards (top-right or bottom-left pair)
+  vertCard: {
+    width: '25%',
     backgroundColor: WH,
     borderRadius: 8,
     overflow: 'hidden',
-    flex: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    flexDirection: 'column',
   },
-  bigCardImageBox: {
+  vertCardImg: {
+    height: '55%',
+    backgroundColor: '#F0EDF8',
     position: 'relative',
-    height: 165,
-    backgroundColor: '#F5F3FA',
   },
-  bigCardImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  bigOfertaBadge: {
+  vertCardImgEl: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: VM,
-    borderWidth: 2,
-    borderColor: WH,
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: 0, left: 0, bottom: 0, right: 0,
+    objectFit: 'contain',
   },
-  bigOfertaText: {
-    color: WH,
-    fontSize: 7.5,
-    fontFamily: 'Helvetica-Bold',
-    textAlign: 'center',
+  vertCardBody: {
+    flex: 1,
+    padding: 6,
+    justifyContent: 'space-between',
   },
-  bigMarcaBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: RD,
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-  },
-  bigMarcaText: {
-    color: WH,
-    fontSize: 6,
-    fontFamily: 'Helvetica-Bold',
-  },
-  bigCardBody: {
-    padding: 10,
-  },
-  bigProductName: {
-    fontSize: 11,
-    fontFamily: 'Helvetica-Bold',
-    color: '#1a1a1a',
-    textTransform: 'uppercase',
-    marginBottom: 3,
-  },
-  bigUnitText: {
-    fontSize: 8,
-    color: GY,
-    marginBottom: 6,
-  },
-  bigMinBadge: {
-    backgroundColor: VD,
-    borderRadius: 3,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    alignSelf: 'flex-start',
-    marginBottom: 6,
-  },
-  bigMinText: {
-    color: WH,
+  vertProductName: {
     fontSize: 6.5,
     fontFamily: 'Helvetica-Bold',
+    color: '#111',
+    textTransform: 'uppercase',
+    lineHeight: 1.2,
+    marginBottom: 1,
   },
-  bigPriceBanner: {
-    backgroundColor: VM,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginVertical: 4,
-    alignItems: 'flex-start',
-  },
-  bigPriceText: {
-    color: WH,
-    fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
-  },
-  bigPricePerKg: {
-    fontSize: 7,
-    color: GY,
-    marginTop: 3,
-  },
-  bigAddBtn: {
-    backgroundColor: VM,
-    borderRadius: 5,
-    paddingVertical: 6,
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  bigAddText: {
-    color: WH,
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-  },
+  vertUnit: { fontSize: 6, color: GY, marginBottom: 3 },
 
-  // REGULAR GRID (right panel)
-  regularGrid: {
-    flex: 1,
+  // ── MIDDLE GRID ─────────────────────────────────────────────────────────────
+  gridRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignContent: 'flex-start',
+    height: 99,
+    gap: 4,
   },
-  // Full-width grid (no oferta)
-  fullGrid: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignContent: 'flex-start',
-  },
-
-  // SMALL CARD
-  card: {
+  hCard: {
+    width: '25%',
     backgroundColor: WH,
     borderRadius: 6,
     overflow: 'hidden',
-    margin: '1.2%',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
+    flexDirection: 'row',
   },
-  cardImageBox: {
+  hCardImgBox: {
+    width: '34%',
+    backgroundColor: '#F0EDF8',
     position: 'relative',
-    height: 70,
-    backgroundColor: '#F5F3FA',
   },
-  cardImage: {
-    width: '100%',
-    height: '100%',
+  hCardImg: {
+    position: 'absolute',
+    top: 0, left: 0, bottom: 0, right: 0,
     objectFit: 'contain',
   },
-  cardOfertaBadge: {
-    position: 'absolute',
-    top: 4,
-    left: 4,
-    backgroundColor: VM,
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  cardOfertaText: {
-    color: WH,
-    fontSize: 5.5,
-    fontFamily: 'Helvetica-Bold',
-  },
-  cardMarcaBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    backgroundColor: RD,
-    borderRadius: 3,
-    paddingHorizontal: 3,
-    paddingVertical: 1.5,
-  },
-  cardMarcaText: {
-    color: WH,
-    fontSize: 5,
-    fontFamily: 'Helvetica-Bold',
-  },
-  cardBody: {
+  hCardBody: {
+    flex: 1,
     padding: 5,
+    justifyContent: 'space-between',
   },
-  productName: {
-    fontSize: 7,
-    fontFamily: 'Helvetica-Bold',
-    color: '#1a1a1a',
-    textTransform: 'uppercase',
-    marginBottom: 2,
-  },
-  unitText: {
+  hProductName: {
     fontSize: 6,
-    color: GY,
-    marginBottom: 3,
+    fontFamily: 'Helvetica-Bold',
+    color: '#111',
+    textTransform: 'uppercase',
+    lineHeight: 1.2,
+    marginBottom: 1,
   },
+  hUnit: { fontSize: 5.5, color: GY, marginBottom: 2 },
+  hPricePerKg: { fontSize: 5, color: LG, marginTop: 2 },
+
+  // ── SHARED CARD ELEMENTS ─────────────────────────────────────────────────────
   minBadge: {
     backgroundColor: VD,
     borderRadius: 3,
@@ -377,110 +225,276 @@ const s = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: 3,
   },
-  minText: {
-    color: WH,
-    fontSize: 5.5,
-    fontFamily: 'Helvetica-Bold',
+  minText: { color: WH, fontSize: 5.5, fontFamily: 'Helvetica-Bold' },
+  minTextSm: { color: WH, fontSize: 5, fontFamily: 'Helvetica-Bold' },
+
+  marcaBadge: {
+    position: 'absolute',
+    top: 4, right: 4,
+    backgroundColor: RD,
+    borderRadius: 3,
+    paddingHorizontal: 3,
+    paddingVertical: 1.5,
   },
-  priceBanner: {
+  marcaText: { color: WH, fontSize: 5, fontFamily: 'Helvetica-Bold' },
+
+  addBtnSm: {
     backgroundColor: VM,
-    borderRadius: 4,
-    paddingHorizontal: 6,
+    borderRadius: 3,
     paddingVertical: 3,
-    marginVertical: 2,
-    alignItems: 'flex-start',
-  },
-  priceText: {
-    color: WH,
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-  },
-  pricePerKg: {
-    fontSize: 5.5,
-    color: GY,
-    marginTop: 2,
-  },
-  addBtn: {
-    backgroundColor: VM,
-    borderRadius: 4,
-    paddingVertical: 4,
     alignItems: 'center',
     marginTop: 3,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 2,
   },
-  addText: {
-    color: WH,
-    fontSize: 6,
-    fontFamily: 'Helvetica-Bold',
+  addBtnMd: {
+    backgroundColor: VM,
+    borderRadius: 5,
+    paddingVertical: 5,
+    alignItems: 'center',
+    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 3,
   },
+  addTextSm: { color: WH, fontSize: 5.5, fontFamily: 'Helvetica-Bold' },
+  addTextMd: { color: WH, fontSize: 7, fontFamily: 'Helvetica-Bold' },
 
-  // FOOTER
+  // ── FOOTER ──────────────────────────────────────────────────────────────────
   footer: {
     backgroundColor: VD,
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 8,
+    height: 52,
+    paddingHorizontal: 16,
+    alignItems: 'center',
     borderTopWidth: 2,
     borderTopColor: VM,
   },
-  footerCol: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  footerIcon: {
-    fontSize: 14,
-    color: VL,
-    marginBottom: 3,
-    fontFamily: 'Helvetica-Bold',
-  },
-  footerTitle: {
-    color: WH,
-    fontSize: 6.5,
-    fontFamily: 'Helvetica-Bold',
-    textAlign: 'center',
-    marginBottom: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
-  },
-  footerDesc: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 5.5,
-    textAlign: 'center',
-  },
+  footerCol: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 4 },
+  footerDivider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.15)' },
+  footerIcon: { width: 26, height: 26, borderRadius: 13, backgroundColor: VM, alignItems: 'center', justifyContent: 'center' },
+  footerIconText: { color: WH, fontSize: 11 },
+  footerTextBlock: { flex: 1 },
+  footerTitle: { color: WH, fontSize: 6, fontFamily: 'Helvetica-Bold', textTransform: 'uppercase', letterSpacing: 0.3, marginBottom: 1.5 },
+  footerDesc: { color: 'rgba(255,255,255,0.55)', fontSize: 5.5 },
 })
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function PriceArrow({ price, height = 24, fontSize = 14 }: { price: string; height?: number; fontSize?: number }) {
+  const w = 105
+  const tip = height / 2
+  const pts = `0,0 ${w - tip},0 ${w},${tip} ${w - tip},${height} 0,${height}`
+  return (
+    <View style={{ height, width: w, position: 'relative', marginVertical: 3 }}>
+      <Svg width={w} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <Polygon points={pts} fill={VM} />
+      </Svg>
+      <View style={{ position: 'absolute', top: 0, left: 0, right: tip, bottom: 0, justifyContent: 'center', paddingLeft: 7 }}>
+        <Text style={{ color: WH, fontSize, fontFamily: 'Helvetica-Bold' }}>${price}</Text>
+      </View>
+    </View>
+  )
+}
+
+function PriceArrowWide({ price, height = 22, fontSize = 13 }: { price: string; height?: number; fontSize?: number }) {
+  const w = 95
+  const tip = height / 2
+  const pts = `0,0 ${w - tip},0 ${w},${tip} ${w - tip},${height} 0,${height}`
+  return (
+    <View style={{ height, width: w, position: 'relative', marginVertical: 2 }}>
+      <Svg width={w} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
+        <Polygon points={pts} fill={VM} />
+      </Svg>
+      <View style={{ position: 'absolute', top: 0, left: 0, right: tip, bottom: 0, justifyContent: 'center', paddingLeft: 6 }}>
+        <Text style={{ color: WH, fontSize, fontFamily: 'Helvetica-Bold' }}>${price}</Text>
+      </View>
+    </View>
+  )
+}
+
+function MinBadge({ text, sm = false }: { text: string; sm?: boolean }) {
+  if (!text) return null
+  return (
+    <View style={s.minBadge}>
+      <Text style={sm ? s.minTextSm : s.minText}>{text}</Text>
+    </View>
+  )
+}
+
+function OfertaMedal({ size = 62 }: { size?: number }) {
+  const r = size / 2
+  return (
+    <View style={{
+      position: 'absolute', top: 6, left: 6, zIndex: 10,
+      width: size, height: size + 16,
+    }}>
+      {/* Circle */}
+      <View style={{
+        width: size, height: size, borderRadius: r,
+        backgroundColor: '#4A1FA0',
+        borderWidth: 2.5, borderColor: WH,
+        alignItems: 'center', justifyContent: 'center',
+      }}>
+        <View style={{
+          width: size - 10, height: size - 10, borderRadius: (size - 10) / 2,
+          borderWidth: 1, borderColor: 'rgba(255,255,255,0.4)',
+          alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Text style={{ color: VL, fontSize: size * 0.12, fontFamily: 'Helvetica-Bold', marginBottom: 2 }}>★</Text>
+          <Text style={{ color: WH, fontSize: size * 0.17, fontFamily: 'Helvetica-Bold', letterSpacing: 0.5 }}>OFERTA</Text>
+          <Text style={{ color: VL, fontSize: size * 0.12, fontFamily: 'Helvetica-Bold', marginTop: 2 }}>★</Text>
+        </View>
+      </View>
+      {/* Ribbon left */}
+      <View style={{
+        position: 'absolute', bottom: 0, left: r - 10,
+        width: 8, height: 16, backgroundColor: '#4A1FA0',
+        borderBottomLeftRadius: 2,
+      }} />
+      {/* Ribbon right */}
+      <View style={{
+        position: 'absolute', bottom: 0, left: r + 2,
+        width: 8, height: 16, backgroundColor: '#6B3FA0',
+        borderBottomRightRadius: 2,
+      }} />
+    </View>
+  )
+}
+
+function MarcaBadge() {
+  return (
+    <View style={s.marcaBadge}>
+      <Text style={s.marcaText}>NUESTRAS MARCAS</Text>
+    </View>
+  )
+}
+
+// ── Card components ───────────────────────────────────────────────────────────
+
+function VertCard({ item }: { item: PromoItem }) {
+  return (
+    <View style={s.vertCard}>
+      <View style={s.vertCardImg}>
+        {item.imageUrl
+          ? <Image src={item.imageUrl} style={s.vertCardImgEl} />
+          : <View style={[s.vertCardImgEl, { backgroundColor: '#E9E2F8' }]} />}
+        {item.isMarca && <MarcaBadge />}
+      </View>
+      <View style={s.vertCardBody}>
+        <View>
+          <Text style={s.vertProductName}>{item.name}</Text>
+          <Text style={s.vertUnit}>x {item.unit}</Text>
+        </View>
+        <View>
+          <MinBadge text={item.minUnitsBadge} sm />
+          <PriceArrowWide price={item.promoPrice} height={20} fontSize={12} />
+          {item.pricePerUnit
+            ? <Text style={{ fontSize: 5, color: LG, marginTop: 1 }}>PRECIO X {item.pricePerUnitLabel}: ${item.pricePerUnit}</Text>
+            : null}
+          <View style={s.addBtnSm}>
+            <Text style={s.addTextSm}>&#128722; AGREGAR</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+function HorizCard({ item }: { item: PromoItem }) {
+  return (
+    <View style={s.hCard}>
+      <View style={s.hCardImgBox}>
+        {item.imageUrl
+          ? <Image src={item.imageUrl} style={s.hCardImg} />
+          : <View style={[s.hCardImg, { backgroundColor: '#E9E2F8' }]} />}
+        {item.isMarca && (
+          <View style={[s.marcaBadge, { top: 3, right: 3, paddingHorizontal: 2 }]}>
+            <Text style={[s.marcaText, { fontSize: 4 }]}>NUESTRAS{'\n'}MARCAS</Text>
+          </View>
+        )}
+      </View>
+      <View style={s.hCardBody}>
+        <View>
+          <Text style={s.hProductName}>{item.name}</Text>
+          <Text style={s.hUnit}>x {item.unit}</Text>
+        </View>
+        <View>
+          <MinBadge text={item.minUnitsBadge} sm />
+          <PriceArrowWide price={item.promoPrice} height={19} fontSize={11} />
+          {item.pricePerUnit
+            ? <Text style={s.hPricePerKg}>PRECIO X {item.pricePerUnitLabel}: ${item.pricePerUnit}</Text>
+            : null}
+          <View style={s.addBtnSm}>
+            <Text style={s.addTextSm}>&#128722; AGREGAR</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+function OfertaMergedCard({ item }: { item: PromoItem }) {
+  return (
+    <View style={s.ofertaMergedCard}>
+      {/* Left dark image half */}
+      <View style={s.ofertaImageHalf}>
+        {item.imageUrl
+          ? <Image src={item.imageUrl} style={s.ofertaImg} />
+          : <View style={[s.ofertaImg, { backgroundColor: VX }]} />}
+        <OfertaMedal size={60} />
+      </View>
+      {/* Right white text half */}
+      <View style={s.ofertaTextHalf}>
+        <View>
+          <Text style={s.ofertaProductName}>{item.name}</Text>
+          <Text style={s.ofertaUnit}>x {item.unit}</Text>
+          {item.pricePerUnit
+            ? <Text style={s.ofertaPricePerKg}>PRECIO X {item.pricePerUnitLabel}: ${item.pricePerUnit}</Text>
+            : null}
+        </View>
+        <View>
+          <MinBadge text={item.minUnitsBadge} />
+          <PriceArrow price={item.promoPrice} height={26} fontSize={16} />
+          <View style={s.addBtnMd}>
+            <Text style={s.addTextMd}>&#128722; AGREGAR AL PEDIDO</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+// ── Header & footer ───────────────────────────────────────────────────────────
 
 function Header() {
   return (
     <View style={s.header}>
-      {/* Left: logo + company */}
-      <View style={s.headerLeft}>
-        <View style={s.logoBadge}>
-          <Text style={s.logoFC}>FC</Text>
-          <Text style={s.logoCarhue}>CARHUE</Text>
+      <View style={s.hLeft}>
+        <View style={s.badge}>
+          <Text style={s.badgeStars}>★ ★ ★</Text>
+          <Text style={s.badgeFC}>FC</Text>
+          <Text style={s.badgeCarhue}>CARHU&#201;</Text>
         </View>
-        <View style={s.logoCompanyBlock}>
-          <Text style={s.logoCompanyName}>FRACCIONADORA CARHU&#201;</Text>
-          <Text style={s.logoCompanySub}>DISTRIBUCI&#211;N DE ALIMENTOS</Text>
+        <View style={s.hCompany}>
+          <Text style={s.hName}>FRACCIONADORA CARHU&#201;</Text>
+          <Text style={s.hSub}>DISTRIBUCI&#211;N DE ALIMENTOS</Text>
         </View>
       </View>
-
-      {/* Center: tagline */}
-      <View style={s.headerCenter}>
-        <Text style={s.headerCenterText}>
+      <View style={s.hDivider} />
+      <View style={s.hCenter}>
+        <Text style={s.hTagline}>
           {'Distribuimos '}
-          <Text style={s.headerHighlight}>calidad</Text>
-          {', entregamos '}
-          <Text style={s.headerHighlight}>confianza.</Text>
+          <Text style={s.hHighlight}>calidad</Text>
+          {',\n entregamos '}
+          <Text style={s.hHighlight}>confianza.</Text>
         </Text>
       </View>
-
-      {/* Right: delivery info */}
-      <View style={s.headerRight}>
-        <Text style={s.deliveryTitle}>&#x1F69A; ENTREGAS GRATIS EN:</Text>
-        <Text style={s.deliveryCities}>Carhu&#233; &#x2022; Rivera &#x2022; Puan &#x2022; Espartillar &#x2022; Pig&#252;&#233;</Text>
+      <View style={s.hDivider} />
+      <View style={s.hRight}>
+        <Text style={s.hEntregas}>ENTREGAS GRATIS EN:</Text>
+        <Text style={s.hCities}>Carhu&#233; &#x2022; Rivera &#x2022; Puan{'\n'}Espartillar &#x2022; Pig&#252;&#233;</Text>
       </View>
     </View>
   )
@@ -489,101 +503,16 @@ function Header() {
 function SubHeader() {
   return (
     <View style={s.subHeader}>
-      <View style={s.catalogBtn}>
-        <Text style={{ color: VM, fontSize: 11, fontFamily: 'Helvetica-Bold' }}>&#8801;</Text>
-        <Text style={s.catalogText}>CAT&#193;LOGO</Text>
+      <View style={s.sCatalogo}>
+        <Text style={{ color: VM, fontSize: 12, fontFamily: 'Helvetica-Bold' }}>&#8801;</Text>
+        <Text style={s.sCatalogoText}>CAT&#193;LOGO</Text>
       </View>
-      <View style={s.searchBar}>
-        <Text style={s.searchText}>Buscar productos...</Text>
+      <View style={s.sSearch}>
+        <Text style={s.sSearchText}>Buscar productos...</Text>
       </View>
-      <View style={s.waBtn}>
-        <Text style={s.waBtnText}>PEDIR POR WHATSAPP</Text>
-      </View>
-    </View>
-  )
-}
-
-function BigCardComp({ item }: { item: PromoItem }) {
-  return (
-    <View style={s.bigCard}>
-      <View style={s.bigCardImageBox}>
-        {item.imageUrl ? (
-          <Image src={item.imageUrl} style={s.bigCardImage} />
-        ) : (
-          <View style={[s.bigCardImage, { backgroundColor: '#E9E2F8' }]} />
-        )}
-        <View style={s.bigOfertaBadge}>
-          <Text style={s.bigOfertaText}>{'OFERTA'}</Text>
-        </View>
-        {item.isMarca && (
-          <View style={s.bigMarcaBadge}>
-            <Text style={s.bigMarcaText}>NUESTRAS MARCAS</Text>
-          </View>
-        )}
-      </View>
-      <View style={s.bigCardBody}>
-        <Text style={s.bigProductName}>{item.name}</Text>
-        <Text style={s.bigUnitText}>x {item.unit}</Text>
-        {item.minUnits ? (
-          <View style={s.bigMinBadge}>
-            <Text style={s.bigMinText}>DESDE {item.minUnits} UNIDADES</Text>
-          </View>
-        ) : null}
-        <View style={s.bigPriceBanner}>
-          <Text style={s.bigPriceText}>${item.promoPrice}</Text>
-        </View>
-        {item.pricePerUnit ? (
-          <Text style={s.bigPricePerKg}>
-            PRECIO X {item.pricePerUnitLabel}: ${item.pricePerUnit}
-          </Text>
-        ) : null}
-        <View style={s.bigAddBtn}>
-          <Text style={s.bigAddText}>+ AGREGAR AL PEDIDO</Text>
-        </View>
-      </View>
-    </View>
-  )
-}
-
-function SmallCardComp({ item, width }: { item: PromoItem; width: string }) {
-  return (
-    <View style={[s.card, { width }]}>
-      <View style={s.cardImageBox}>
-        {item.imageUrl ? (
-          <Image src={item.imageUrl} style={s.cardImage} />
-        ) : (
-          <View style={[s.cardImage, { backgroundColor: '#E9E2F8' }]} />
-        )}
-        {item.isOferta && (
-          <View style={s.cardOfertaBadge}>
-            <Text style={s.cardOfertaText}>OFERTA</Text>
-          </View>
-        )}
-        {item.isMarca && (
-          <View style={s.cardMarcaBadge}>
-            <Text style={s.cardMarcaText}>NUESTRAS MARCAS</Text>
-          </View>
-        )}
-      </View>
-      <View style={s.cardBody}>
-        <Text style={s.productName}>{item.name}</Text>
-        <Text style={s.unitText}>x {item.unit}</Text>
-        {item.minUnits ? (
-          <View style={s.minBadge}>
-            <Text style={s.minText}>DESDE {item.minUnits} UNIDADES</Text>
-          </View>
-        ) : null}
-        <View style={s.priceBanner}>
-          <Text style={s.priceText}>${item.promoPrice}</Text>
-        </View>
-        {item.pricePerUnit ? (
-          <Text style={s.pricePerKg}>
-            PRECIO X {item.pricePerUnitLabel}: ${item.pricePerUnit}
-          </Text>
-        ) : null}
-        <View style={s.addBtn}>
-          <Text style={s.addText}>+ AGREGAR</Text>
-        </View>
+      <View style={s.sWaBtn}>
+        <Text style={{ color: WH, fontSize: 8 }}>&#9658;</Text>
+        <Text style={s.sWaText}>PEDIR POR WHATSAPP</Text>
       </View>
     </View>
   )
@@ -591,60 +520,91 @@ function SmallCardComp({ item, width }: { item: PromoItem; width: string }) {
 
 function Footer() {
   const cols = [
-    { icon: '>>', title: 'DISTRIBUCIÓN EFICIENTE', desc: 'Llegamos a tiempo, siempre.' },
-    { icon: '**', title: 'PRODUCTOS DE CALIDAD', desc: 'Seleccionamos lo mejor para vos.' },
-    { icon: '<<', title: 'COMPROMISO Y CONFIANZA', desc: 'Acompañamos tu negocio en cada paso.' },
-    { icon: '[]', title: 'CARHUÉ, NUESTRO ORIGEN', desc: 'Conocemos la zona, estamos cerca.' },
+    { icon: '&#128666;', title: 'DISTRIBUCIÓN EFICIENTE', desc: 'Llegamos a tiempo, siempre.' },
+    { icon: '&#11088;',  title: 'PRODUCTOS DE CALIDAD',   desc: 'Seleccionamos lo mejor para vos.' },
+    { icon: '&#129309;', title: 'COMPROMISO Y CONFIANZA', desc: 'Acompañamos tu negocio en cada día.' },
+    { icon: '&#128205;', title: 'CARHUÉ, NUESTRO ORIGEN', desc: 'Conocemos la zona, estamos cerca.' },
   ]
   return (
     <View style={s.footer}>
-      {cols.map(c => (
-        <View key={c.title} style={s.footerCol}>
-          <Text style={s.footerTitle}>{c.title}</Text>
-          <Text style={s.footerDesc}>{c.desc}</Text>
+      {cols.map((c, i) => (
+        <View key={c.title} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+          <View style={s.footerCol}>
+            <View style={s.footerIcon}>
+              <Text style={s.footerIconText}>{c.icon}</Text>
+            </View>
+            <View style={s.footerTextBlock}>
+              <Text style={s.footerTitle}>{c.title}</Text>
+              <Text style={s.footerDesc}>{c.desc}</Text>
+            </View>
+          </View>
+          {i < 3 && <View style={s.footerDivider} />}
         </View>
       ))}
     </View>
   )
 }
 
-// ── Main PDF Document ─────────────────────────────────────────────────────────
+// ── Main document ─────────────────────────────────────────────────────────────
 export default function PromocionPDF({ items }: { items: PromoItem[] }) {
-  const ofertaItem = items.find(i => i.isOferta) ?? null
-  const regularItems = items.filter(i => i !== ofertaItem)
-  const hasOferta = ofertaItem !== null
+  const principal   = items.find(i => i.ofertaType === 'principal')!
+  const secundaria  = items.find(i => i.ofertaType === 'secundaria')!
+  const regulars    = items.filter(i => i.ofertaType === null)
+
+  // Layout: top-right 2, middle 12, bottom-left 2
+  const topRight    = regulars.slice(0, 2)
+  const middle      = regulars.slice(2, 14)    // 12 products → 3 rows of 4
+  const bottomLeft  = regulars.slice(14, 16)   // 2 products
+
+  const midRows = [
+    middle.slice(0, 4),
+    middle.slice(4, 8),
+    middle.slice(8, 12),
+  ]
 
   return (
-    <Document
-      title="Promociones Fraccionadora Carhué"
-      author="Fraccionadora Carhué"
-    >
-      <Page size="A4" orientation="landscape" style={s.page}>
+    <Document title="Promociones Fraccionadora Carhué" author="Fraccionadora Carhué">
+      <Page size="A4" orientation="portrait" style={s.page}>
         <Header />
         <SubHeader />
 
         <View style={s.content}>
-          {hasOferta ? (
-            <>
-              {/* Big OFERTA card on the left */}
-              <View style={s.bigCardWrap}>
-                <BigCardComp item={ofertaItem} />
-              </View>
-              {/* Regular cards in 3-col grid on the right */}
-              <View style={s.regularGrid}>
-                {regularItems.map(item => (
-                  <SmallCardComp key={item.id} item={item} width="30.5%" />
-                ))}
-              </View>
-            </>
-          ) : (
-            /* No OFERTA: 5-col full grid */
-            <View style={s.fullGrid}>
-              {items.map(item => (
-                <SmallCardComp key={item.id} item={item} width="17.6%" />
+
+          {/* ── TOP HERO ROW (oferta principal + 2 vert cards) ── */}
+          <View style={s.heroRow}>
+            <OfertaMergedCard item={principal} />
+            {topRight.map(item => (
+              <VertCard key={item.id} item={item} />
+            ))}
+            {/* Fill missing slots if < 2 top cards */}
+            {topRight.length < 2 && Array.from({ length: 2 - topRight.length }).map((_, i) => (
+              <View key={`empty-top-${i}`} style={[s.vertCard, { backgroundColor: 'transparent' }]} />
+            ))}
+          </View>
+
+          {/* ── MIDDLE GRID: 3 rows × 4 horizontal cards ── */}
+          {midRows.map((row, ri) => (
+            <View key={ri} style={s.gridRow}>
+              {row.map(item => (
+                <HorizCard key={item.id} item={item} />
+              ))}
+              {row.length < 4 && Array.from({ length: 4 - row.length }).map((_, i) => (
+                <View key={`empty-mid-${ri}-${i}`} style={[s.hCard, { backgroundColor: 'transparent' }]} />
               ))}
             </View>
-          )}
+          ))}
+
+          {/* ── BOTTOM HERO ROW (2 horiz cards + oferta secundaria) ── */}
+          <View style={s.heroRow}>
+            {bottomLeft.map(item => (
+              <HorizCard key={item.id} item={item} />
+            ))}
+            {bottomLeft.length < 2 && Array.from({ length: 2 - bottomLeft.length }).map((_, i) => (
+              <View key={`empty-bot-${i}`} style={[s.hCard, { backgroundColor: 'transparent', width: '25%' }]} />
+            ))}
+            <OfertaMergedCard item={secundaria} />
+          </View>
+
         </View>
 
         <Footer />
