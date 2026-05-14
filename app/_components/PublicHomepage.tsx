@@ -67,17 +67,17 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         className="relative overflow-hidden flex items-center"
         style={{ background: 'linear-gradient(105deg, #1a0f2e 0%, #452C6E 100%)' }}
       >
-        {/* Right-side gondola image (visible on lg+) */}
+        {/* Right-side hero image (visible on lg+) */}
         <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[52%]">
           <img
-            src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80"
-            alt="Góndola de supermercado"
+            src="/hero-cart.png"
+            alt="Carrito con productos de marcas argentinas"
             className="w-full h-full object-cover object-center"
           />
           {/* Fade from left so text side blends in */}
           <div
             className="absolute inset-0"
-            style={{ background: 'linear-gradient(to right, #452C6E 0%, rgba(69,44,110,0.6) 35%, transparent 65%)' }}
+            style={{ background: 'linear-gradient(to right, #452C6E 0%, rgba(69,44,110,0.5) 30%, transparent 60%)' }}
           />
         </div>
 
