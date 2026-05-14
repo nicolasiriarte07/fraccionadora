@@ -55,84 +55,92 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
 
   return (
     <>
-      {/* ── HERO ── full-width supermarket gondola background ───────── */}
-      <section id="inicio" className="relative overflow-hidden min-h-[92vh] flex items-center">
-        {/* Background image */}
-        <img
-          src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=1920&q=80"
-          alt="Góndola de supermercado"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        {/* Violet gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(135deg, rgba(26,15,46,0.94) 0%, rgba(69,44,110,0.90) 50%, rgba(110,75,165,0.82) 100%)' }}
-        />
+      {/* ── HERO ── left text + right gondola image ─────────────────── */}
+      <section
+        id="inicio"
+        className="relative overflow-hidden flex items-center"
+        style={{ background: 'linear-gradient(105deg, #1a0f2e 0%, #452C6E 100%)' }}
+      >
+        {/* Right-side gondola image (visible on lg+) */}
+        <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[52%]">
+          <img
+            src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=1200&q=80"
+            alt="Góndola de supermercado"
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Fade from left so text side blends in */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(to right, #452C6E 0%, rgba(69,44,110,0.6) 35%, transparent 65%)' }}
+          />
+        </div>
 
-        {/* Content — centered */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-center w-full">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-white/80 text-sm font-semibold">Distribución mayorista · Desde 1990</span>
-          </div>
+        {/* Left content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 w-full">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-white/80 text-xs font-semibold">Distribución mayorista · Desde 1990</span>
+            </div>
 
-          <h1
-            className="font-poppins font-black text-white leading-none mb-6"
-            style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(3rem, 9vw, 6.5rem)' }}
-          >
-            DISTRIBUIMOS<br />
-            <span style={{ color: '#C4A8F0' }}>CALIDAD,</span><br />
-            ENTREGAMOS<br />
-            <span style={{ color: '#A78BD6' }}>CONFIANZA.</span>
-          </h1>
-
-          <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Somos distribuidores mayoristas de alimentos y artículos de limpieza para comercios y negocios de la región.
-          </p>
-
-          <div className="flex flex-wrap gap-4 justify-center mb-14">
-            <button
-              onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-              className="font-poppins font-bold bg-white text-[#452C6E] px-8 py-4 rounded-full text-sm hover:bg-[#F5F3FA] transition-all hover:scale-105 shadow-xl"
-              style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+            <h1
+              className="font-poppins font-black text-white leading-none mb-4"
+              style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(2.4rem, 5.5vw, 4rem)' }}
             >
-              Ver catálogo
-            </button>
-            <a
-              href={WA}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-4 rounded-full text-sm transition-all hover:scale-105 shadow-xl"
-            >
-              <WaIcon className="w-5 h-5" />
-              Pedir por WhatsApp
-            </a>
-          </div>
+              DISTRIBUIMOS<br />
+              <span style={{ color: '#C4A8F0' }}>CALIDAD,</span><br />
+              ENTREGAMOS<br />
+              <span style={{ color: '#A78BD6' }}>CONFIANZA.</span>
+            </h1>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-4 justify-center">
-            {[
-              { value: '+500', label: 'productos' },
-              { value: '5',    label: 'localidades' },
-              { value: '+30',  label: 'años de experiencia' },
-            ].map(s => (
-              <div key={s.label} className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-7 py-4 text-center">
-                <span
-                  className="block font-poppins font-black text-white text-3xl"
-                  style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
-                >
-                  {s.value}
-                </span>
-                <span className="text-white/55 text-xs font-medium">{s.label}</span>
-              </div>
-            ))}
+            <p className="text-white/65 text-base max-w-md mb-7 leading-relaxed">
+              Distribuidores mayoristas de alimentos y artículos de limpieza para comercios y negocios de la región.
+            </p>
+
+            <div className="flex flex-wrap gap-3 mb-8">
+              <button
+                onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+                className="font-poppins font-bold bg-white text-[#452C6E] px-7 py-3 rounded-full text-sm hover:bg-[#F5F3FA] transition-all hover:scale-105 shadow-lg"
+                style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+              >
+                Ver catálogo
+              </button>
+              <a
+                href={WA}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-7 py-3 rounded-full text-sm transition-all hover:scale-105 shadow-lg"
+              >
+                <WaIcon className="w-4 h-4" />
+                Pedir por WhatsApp
+              </a>
+            </div>
+
+            {/* Compact stats */}
+            <div className="flex flex-wrap gap-3">
+              {[
+                { value: '+500', label: 'productos' },
+                { value: '5',    label: 'localidades' },
+                { value: '+30',  label: 'años' },
+              ].map(s => (
+                <div key={s.label} className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl px-5 py-3 text-center">
+                  <span
+                    className="block font-poppins font-black text-white text-xl"
+                    style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                  >
+                    {s.value}
+                  </span>
+                  <span className="text-white/50 text-[11px]">{s.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Wave */}
         <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-          <svg viewBox="0 0 1440 64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full">
-            <path d="M0 64V32C360 0 720 64 1080 32C1260 16 1360 52 1440 64H0Z" fill="#F5F3FA" />
+          <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full">
+            <path d="M0 48V24C360 0 720 48 1080 24C1260 12 1360 40 1440 48H0Z" fill="#F5F3FA" />
           </svg>
         </div>
       </section>
