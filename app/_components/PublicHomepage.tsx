@@ -42,6 +42,45 @@ const CATEGORIES = [
   { label: 'Harina',           icon: '🌾', img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&q=80', db: 'Harina'           },
 ]
 
+const MONTHLY_OFFERS = [
+  {
+    name: 'Aceite Girasol Cocinero 1.5L',
+    category: 'Aceites',
+    price: '$4.200',
+    oldPrice: '$5.800',
+    discount: '-28%',
+    unit: 'caja x12',
+    img: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&q=80',
+  },
+  {
+    name: 'Azúcar Ledesma 1kg',
+    category: 'Azúcar',
+    price: '$1.850',
+    oldPrice: '$2.400',
+    discount: '-23%',
+    unit: 'bolsa x30',
+    img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=400&q=80',
+  },
+  {
+    name: 'Arroz Gallo Oro 500g',
+    category: 'Arroz',
+    price: '$1.100',
+    oldPrice: '$1.600',
+    discount: '-31%',
+    unit: 'caja x20',
+    img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
+  },
+  {
+    name: 'Puré de Tomate Arcor 520g',
+    category: 'Conservas',
+    price: '$1.650',
+    oldPrice: '$2.200',
+    discount: '-25%',
+    unit: 'caja x24',
+    img: 'https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?w=400&q=80',
+  },
+]
+
 const BRANDS = [
   'Molinos Ala', 'S&P', 'Amanda', 'Terrabusi', "Hellmann's",
   'Arcor', 'La Serenísima', 'Danone', 'Unilever', 'Marolio', 'Quilmes', 'Villavicencio',
@@ -148,6 +187,73 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
           <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full">
             <path d="M0 48V24C360 0 720 48 1080 24C1260 12 1360 40 1440 48H0Z" fill="#F5F3FA" />
           </svg>
+        </div>
+      </section>
+
+      {/* ── OFERTAS DEL MES ───────────────────────────────────────── */}
+      <section id="ofertas-mes" className="py-16 px-4" style={{ background: '#FF2D20' }}>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4 mb-8 flex-wrap">
+            <div className="flex items-center gap-3">
+              <span
+                className="font-poppins font-black text-white leading-none"
+                style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(1.8rem, 5vw, 2.8rem)' }}
+              >
+                🔥 OFERTAS DEL MES
+              </span>
+            </div>
+            <div className="flex-1 h-px bg-white/25 hidden sm:block" />
+            <span className="bg-yellow-400 text-black text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+              ¡Sólo por tiempo limitado!
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {MONTHLY_OFFERS.map(offer => (
+              <div
+                key={offer.name}
+                className="relative bg-white rounded-2xl overflow-hidden shadow-xl group hover:-translate-y-1 transition-transform duration-300"
+              >
+                {/* Discount badge */}
+                <div className="absolute top-3 left-3 z-10 bg-red-600 text-white text-xs font-black px-2.5 py-1 rounded-full">
+                  {offer.discount}
+                </div>
+                <div className="h-40 overflow-hidden bg-gray-100">
+                  <img
+                    src={offer.img}
+                    alt={offer.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-4">
+                  <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-0.5">{offer.category}</p>
+                  <h3
+                    className="font-poppins font-black text-[#232323] text-sm leading-tight mb-2"
+                    style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                  >
+                    {offer.name}
+                  </h3>
+                  <div className="flex items-baseline gap-2">
+                    <span
+                      className="font-poppins font-black text-red-600 text-lg"
+                      style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                    >
+                      {offer.price}
+                    </span>
+                    <span className="text-gray-400 text-xs line-through">{offer.oldPrice}</span>
+                  </div>
+                  <p className="text-gray-400 text-[11px] mt-1">{offer.unit}</p>
+                  <button
+                    onClick={() => {}}
+                    className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2 rounded-xl transition-colors"
+                    style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                  >
+                    Ver oferta
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

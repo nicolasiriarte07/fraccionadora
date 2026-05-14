@@ -29,6 +29,9 @@ export default function PublicHeader() {
           </svg>
           <span className="font-semibold tracking-wide">ENTREGAS GRATIS EN:</span>
           <span className="text-[#C4A8F0]">Carhué · Rivera · Puan · Espartillar · Pigüé</span>
+          <span className="hidden sm:inline text-white/30">|</span>
+          <span className="hidden sm:inline font-semibold tracking-wide">Compra mínima:</span>
+          <span className="hidden sm:inline text-[#C4A8F0] font-bold">$300.000</span>
         </div>
       </div>
 
