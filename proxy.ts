@@ -14,12 +14,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith('/catalogo') || pathname.startsWith('/pedidos')) {
+  if (pathname.startsWith('/pedidos')) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url))
-    }
-    if (token.role === 'ADMIN') {
-      return NextResponse.redirect(new URL('/admin', request.url))
     }
   }
 
@@ -34,5 +31,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/catalogo/:path*', '/pedidos/:path*', '/login'],
+  matcher: ['/admin/:path*', '/pedidos/:path*', '/login'],
 }
