@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import FCLogo from './FCLogo'
 
 type Product = {
   id: string
@@ -18,109 +19,113 @@ type Product = {
 const WA = 'https://wa.me/5492291400000?text=Hola!%20Me%20interesa%20conocer%20sus%20productos.'
 
 const FALLBACK_IMGS: Record<string, string> = {
-  Lácteos: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',
+  Lácteos:   'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',
   Enlatados: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80',
-  Bebidas: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
-  Limpieza: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80',
-  Freezer: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80',
-  Almacén: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
+  Bebidas:   'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',
+  Limpieza:  'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80',
+  Freezer:   'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&q=80',
+  Almacén:   'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',
 }
 
 const CATEGORIES = [
-  { label: 'Almacén', icon: '🌾', img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80', db: 'Almacén' },
-  { label: 'Bebidas', icon: '🥤', img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80', db: 'Bebidas' },
-  { label: 'Limpieza', icon: '🧴', img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80', db: 'Limpieza' },
-  { label: 'Congelados', icon: '❄️', img: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&q=80', db: 'Freezer' },
-  { label: 'Lácteos', icon: '🥛', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80', db: 'Lácteos' },
+  { label: 'Almacén',   icon: '🌾', img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80',  db: 'Almacén'  },
+  { label: 'Bebidas',   icon: '🥤', img: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&q=80',  db: 'Bebidas'  },
+  { label: 'Limpieza',  icon: '🧴', img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&q=80', db: 'Limpieza'  },
+  { label: 'Congelados',icon: '❄️', img: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&q=80',  db: 'Freezer'  },
+  { label: 'Lácteos',   icon: '🥛', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80',  db: 'Lácteos'  },
   { label: 'Enlatados', icon: '🥫', img: 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400&q=80', db: 'Enlatados' },
 ]
 
-const BRANDS = ['Molinos Ala', 'S&P', 'Amanda', 'Terrabusi', "Hellmann's", 'Arcor', 'La Serenísima', 'Danone', 'Unilever', 'Marolio', 'Quilmes', 'Villavicencio']
+const BRANDS = [
+  'Molinos Ala', 'S&P', 'Amanda', 'Terrabusi', "Hellmann's",
+  'Arcor', 'La Serenísima', 'Danone', 'Unilever', 'Marolio', 'Quilmes', 'Villavicencio',
+]
 
 export default function PublicHomepage({ products }: { products: Product[] }) {
   const router = useRouter()
   const [activeCat, setActiveCat] = useState<string | null>(null)
 
-  const featured = products.filter(p => p.featured)
-  const displayed = activeCat ? products.filter(p => p.category === activeCat) : (featured.length > 0 ? featured : products.slice(0, 10))
-  const fmt = (n: number) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
+  const featured  = products.filter(p => p.featured)
+  const displayed = activeCat
+    ? products.filter(p => p.category === activeCat)
+    : featured.length > 0 ? featured : products.slice(0, 10)
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
   return (
     <>
-      {/* ─── HERO ─────────────────────────────────────────────────── */}
-      <section
-        id="inicio"
-        className="relative overflow-hidden min-h-[88vh] flex items-center"
-        style={{ background: 'linear-gradient(135deg, #1a0f2e 0%, #452C6E 55%, #6E4BA5 100%)' }}
-      >
-        {/* Decorative blobs */}
-        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(167,139,214,0.25) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 -left-16 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(110,75,165,0.3) 0%, transparent 70%)' }} />
+      {/* ── HERO ── full-width supermarket gondola background ───────── */}
+      <section id="inicio" className="relative overflow-hidden min-h-[92vh] flex items-center">
+        {/* Background image */}
+        <img
+          src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=1920&q=80"
+          alt="Góndola de supermercado"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        {/* Violet gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(135deg, rgba(26,15,46,0.94) 0%, rgba(69,44,110,0.90) 50%, rgba(110,75,165,0.82) 100%)' }}
+        />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 grid lg:grid-cols-2 gap-12 items-center w-full">
-          {/* Text */}
-          <div>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-white/80 text-sm font-semibold">Distribución mayorista · Desde 1990</span>
-            </div>
-
-            <h1
-              className="font-poppins font-black text-white leading-none mb-6"
-              style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(2.8rem, 7vw, 5rem)' }}
-            >
-              DISTRIBUIMOS<br />
-              <span style={{ color: '#C4A8F0' }}>CALIDAD,</span><br />
-              ENTREGAMOS<br />
-              <span style={{ color: '#A78BD6' }}>CONFIANZA.</span>
-            </h1>
-
-            <p className="text-white/65 text-base sm:text-lg max-w-lg mb-8 leading-relaxed">
-              Somos distribuidores mayoristas de alimentos y artículos de limpieza para comercios y negocios de la región.
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                className="font-poppins font-bold bg-white text-[#452C6E] px-7 py-3.5 rounded-full text-sm hover:bg-[#F5F3FA] transition-all hover:scale-105 shadow-lg"
-                style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
-              >
-                Ver catálogo
-              </button>
-              <a
-                href={WA}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-7 py-3.5 rounded-full text-sm transition-all hover:scale-105 shadow-lg"
-              >
-                <WaIcon className="w-5 h-5" />
-                Pedir por WhatsApp
-              </a>
-            </div>
+        {/* Content — centered */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-center w-full">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-white/80 text-sm font-semibold">Distribución mayorista · Desde 1990</span>
           </div>
 
-          {/* Product image + badges */}
-          <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-full max-w-md">
-              <div className="absolute inset-0 rounded-3xl"
-                style={{ background: 'radial-gradient(circle at center, rgba(110,75,165,0.5) 0%, transparent 70%)' }} />
-              <img
-                src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80"
-                alt="Productos mayoristas"
-                className="relative w-full rounded-3xl shadow-2xl object-cover aspect-[4/3]"
-              />
-              <div className="absolute -top-5 -right-5 bg-white rounded-2xl shadow-xl px-5 py-4 text-center">
-                <span className="font-poppins font-black text-[#452C6E] text-3xl block" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>+500</span>
-                <span className="text-xs text-gray-500 font-semibold uppercase tracking-wide">productos</span>
+          <h1
+            className="font-poppins font-black text-white leading-none mb-6"
+            style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(3rem, 9vw, 6.5rem)' }}
+          >
+            DISTRIBUIMOS<br />
+            <span style={{ color: '#C4A8F0' }}>CALIDAD,</span><br />
+            ENTREGAMOS<br />
+            <span style={{ color: '#A78BD6' }}>CONFIANZA.</span>
+          </h1>
+
+          <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            Somos distribuidores mayoristas de alimentos y artículos de limpieza para comercios y negocios de la región.
+          </p>
+
+          <div className="flex flex-wrap gap-4 justify-center mb-14">
+            <button
+              onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+              className="font-poppins font-bold bg-white text-[#452C6E] px-8 py-4 rounded-full text-sm hover:bg-[#F5F3FA] transition-all hover:scale-105 shadow-xl"
+              style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+            >
+              Ver catálogo
+            </button>
+            <a
+              href={WA}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-8 py-4 rounded-full text-sm transition-all hover:scale-105 shadow-xl"
+            >
+              <WaIcon className="w-5 h-5" />
+              Pedir por WhatsApp
+            </a>
+          </div>
+
+          {/* Stats */}
+          <div className="flex flex-wrap gap-4 justify-center">
+            {[
+              { value: '+500', label: 'productos' },
+              { value: '5',    label: 'localidades' },
+              { value: '+30',  label: 'años de experiencia' },
+            ].map(s => (
+              <div key={s.label} className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl px-7 py-4 text-center">
+                <span
+                  className="block font-poppins font-black text-white text-3xl"
+                  style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                >
+                  {s.value}
+                </span>
+                <span className="text-white/55 text-xs font-medium">{s.label}</span>
               </div>
-              <div className="absolute -bottom-5 -left-5 rounded-2xl shadow-xl px-5 py-4 text-center"
-                style={{ background: 'linear-gradient(135deg, #452C6E, #6E4BA5)' }}>
-                <span className="font-poppins font-black text-white text-3xl block" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>5</span>
-                <span className="text-xs text-[#C4A8F0] font-semibold uppercase tracking-wide">localidades</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -132,15 +137,10 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── BENEFITS ─────────────────────────────────────────────── */}
+      {/* ── BENEFITS ──────────────────────────────────────────────── */}
       <section className="py-14 px-4" style={{ background: '#452C6E' }}>
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { icon: <TruckSvg />, title: 'Distribución eficiente', desc: 'Llegamos a tiempo, siempre.' },
-            { icon: <StarSvg />, title: 'Productos de calidad', desc: 'Seleccionamos lo mejor para vos.' },
-            { icon: <HandshakeSvg />, title: 'Compromiso y confianza', desc: 'Acompañamos tu negocio en cada paso.' },
-            { icon: <PinSvg />, title: 'Carhué, nuestro origen', desc: 'Conocemos la zona, estamos cerca.' },
-          ].map(b => (
+          {BENEFITS.map(b => (
             <div key={b.title} className="bg-white/10 hover:bg-white/20 transition-colors rounded-2xl p-6 text-center border border-white/15">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/15 mb-3 text-white">
                 {b.icon}
@@ -157,13 +157,15 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── CATEGORIES ───────────────────────────────────────────── */}
+      {/* ── CATEGORIES ────────────────────────────────────────────── */}
       <section id="productos" className="py-20 px-4 bg-[#F5F3FA]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <span className="text-[#6E4BA5] text-xs font-bold uppercase tracking-[0.2em]">Nuestro catálogo</span>
-            <h2 className="font-poppins font-black text-[#232323] mt-2"
-              style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(2rem, 5vw, 2.75rem)' }}>
+            <h2
+              className="font-poppins font-black text-[#232323] mt-2"
+              style={{ fontFamily: 'var(--font-poppins, sans-serif)', fontSize: 'clamp(2rem, 5vw, 2.75rem)' }}
+            >
               CATEGORÍAS
             </h2>
           </div>
@@ -216,7 +218,7 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── FEATURED OFFERS ──────────────────────────────────────── */}
+      {/* ── FEATURED OFFERS ───────────────────────────────────────── */}
       <section id="ofertas" className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-end justify-between mb-10 gap-4 flex-wrap">
@@ -253,13 +255,15 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── PROMO BANNER ─────────────────────────────────────────── */}
+      {/* ── PROMO BANNER ──────────────────────────────────────────── */}
       <section
         className="relative py-24 px-4 overflow-hidden"
         style={{ background: 'linear-gradient(135deg, #1a0f2e 0%, #452C6E 55%, #6E4BA5 100%)' }}
       >
-        <div className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(167,139,214,0.2) 0%, transparent 70%)' }} />
+        <div
+          className="absolute top-0 right-0 w-96 h-96 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(167,139,214,0.2) 0%, transparent 70%)' }}
+        />
         <div className="relative max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-2 mb-6">
             <span className="text-[#C4A8F0] text-sm font-bold tracking-wide">🏆 FRACCIONADORA CARHUÉ</span>
@@ -294,7 +298,7 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── BRANDS ───────────────────────────────────────────────── */}
+      {/* ── BRANDS ────────────────────────────────────────────────── */}
       <section id="marcas" className="py-16 px-4 bg-[#F5F3FA]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
@@ -324,24 +328,27 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         </div>
       </section>
 
-      {/* ─── FOOTER ───────────────────────────────────────────────── */}
+      {/* ── FOOTER ────────────────────────────────────────────────── */}
       <footer id="contacto" className="bg-[#232323] text-white pt-16 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
             {/* Brand */}
             <div>
               <div className="flex items-center gap-3 mb-5">
-                <div
-                  className="w-12 h-12 rounded-full flex flex-col items-center justify-center flex-shrink-0 border-2 border-[#A78BD6]"
-                  style={{ background: 'linear-gradient(135deg, #452C6E, #6E4BA5)' }}
-                >
-                  <span className="text-[5.5px] text-[#C4A8F0] font-bold tracking-widest uppercase leading-none">FRACCIONADORA</span>
-                  <span className="text-[17px] text-white font-black leading-tight" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>FC</span>
-                  <span className="text-[5.5px] text-[#C4A8F0] font-bold leading-none uppercase">CARHUÉ · 1990</span>
-                </div>
+                <FCLogo size={56} />
                 <div>
-                  <div className="font-poppins font-bold text-white text-xs tracking-widest uppercase" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>Fraccionadora</div>
-                  <div className="font-poppins font-black text-[#A78BD6] text-lg uppercase" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>Carhué</div>
+                  <div
+                    className="font-poppins font-bold text-white text-xs tracking-widest uppercase"
+                    style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                  >
+                    Fraccionadora
+                  </div>
+                  <div
+                    className="font-poppins font-black text-[#A78BD6] text-lg uppercase"
+                    style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+                  >
+                    Carhué
+                  </div>
                 </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -351,7 +358,10 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
 
             {/* Cobertura */}
             <div>
-              <h4 className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>
+              <h4
+                className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest"
+                style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+              >
                 Zona de cobertura
               </h4>
               <ul className="space-y-2">
@@ -366,7 +376,10 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
 
             {/* Links */}
             <div>
-              <h4 className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>
+              <h4
+                className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest"
+                style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+              >
                 Empresa
               </h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -380,7 +393,10 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
 
             {/* Contact */}
             <div>
-              <h4 className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest" style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}>
+              <h4
+                className="font-poppins font-bold text-white mb-4 text-xs uppercase tracking-widest"
+                style={{ fontFamily: 'var(--font-poppins, sans-serif)' }}
+              >
                 Contacto
               </h4>
               <ul className="space-y-3 text-sm text-gray-400">
@@ -423,10 +439,8 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
   )
 }
 
-/* ─── Product card ──────────────────────────────────────────────────────── */
-function ProductCard({
-  product, fmt, onAction,
-}: {
+/* ── Product card ────────────────────────────────────────────────────────── */
+function ProductCard({ product, fmt, onAction }: {
   product: Product
   fmt: (n: number) => string
   onAction: () => void
@@ -476,36 +490,31 @@ function ProductCard({
   )
 }
 
-/* ─── SVG icons ─────────────────────────────────────────────────────────── */
-function TruckSvg() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-    </svg>
-  )
-}
-function StarSvg() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-    </svg>
-  )
-}
-function HandshakeSvg() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  )
-}
-function PinSvg() {
-  return (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-    </svg>
-  )
-}
+/* ── Static benefit cards data ───────────────────────────────────────────── */
+const BENEFITS = [
+  {
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
+    title: 'Distribución eficiente',
+    desc: 'Llegamos a tiempo, siempre.',
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>,
+    title: 'Productos de calidad',
+    desc: 'Seleccionamos lo mejor para vos.',
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    title: 'Compromiso y confianza',
+    desc: 'Acompañamos tu negocio en cada paso.',
+  },
+  {
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+    title: 'Carhué, nuestro origen',
+    desc: 'Conocemos la zona, estamos cerca.',
+  },
+]
+
+/* ── SVG icons ───────────────────────────────────────────────────────────── */
 function WaIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
