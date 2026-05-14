@@ -23,11 +23,17 @@ async function main() {
     create: { name: 'Cliente Demo', email: 'cliente@test.com', password: clientPass, role: 'CLIENT' },
   })
 
-  // promote owner account to ADMIN
+  // promote owner accounts to ADMIN
   await prisma.user.upsert({
     where: { email: 'nicolasiriarte07@gmail.com' },
     update: { role: 'ADMIN' },
     create: { name: 'Nicolás Iriarte', email: 'nicolasiriarte07@gmail.com', password: adminPass, role: 'ADMIN' },
+  })
+
+  await prisma.user.upsert({
+    where: { email: 'matias.iriarte5@gmail.com' },
+    update: { role: 'ADMIN' },
+    create: { name: 'Matías Iriarte', email: 'matias.iriarte5@gmail.com', password: adminPass, role: 'ADMIN' },
   })
 
   // ── Reset products then re-seed ──────────────────────────────────────────
