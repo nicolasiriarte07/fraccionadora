@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
 import PublicHeader from './_components/PublicHeader'
-import PublicCatalog from './_components/PublicCatalog'
+import PublicHomepage from './_components/PublicHomepage'
 
 export default async function HomePage() {
   const products = await prisma.product.findMany({
@@ -11,9 +11,9 @@ export default async function HomePage() {
   })
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F5F3FA]">
       <PublicHeader />
-      <PublicCatalog products={products} />
+      <PublicHomepage products={products} />
     </div>
   )
 }

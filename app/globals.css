@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist);
+  --font-sans: var(--font-montserrat);
 }
 
 body {
-  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  font-family: var(--font-montserrat, 'Montserrat', Arial, sans-serif);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins, 'Poppins', sans-serif);
 }
 
 .scrollbar-hide {
