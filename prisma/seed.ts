@@ -33,6 +33,18 @@ async function main() {
     },
   })
 
+  // promote owner account to ADMIN
+  await prisma.user.upsert({
+    where: { email: 'nicolasiriarte07@gmail.com' },
+    update: { role: 'ADMIN' },
+    create: {
+      name: 'Nicolás Iriarte',
+      email: 'nicolasiriarte07@gmail.com',
+      password: adminPass,
+      role: 'ADMIN',
+    },
+  })
+
   const products = [
     // Lácteos
     {
