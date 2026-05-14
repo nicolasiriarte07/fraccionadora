@@ -70,7 +70,7 @@ export default function PublicHomepage({ products }: { products: Product[] }) {
         {/* Right-side gondola image (visible on lg+) */}
         <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[52%]">
           <img
-            src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=1200&q=80"
+            src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80"
             alt="Góndola de supermercado"
             className="w-full h-full object-cover object-center"
           />

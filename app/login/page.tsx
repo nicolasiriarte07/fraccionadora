@@ -97,7 +97,7 @@ export default function LoginPage() {
     >
       {/* Background image */}
       <img
-        src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=1920&q=80"
+        src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80"
         alt=""
         aria-hidden
         className="absolute inset-0 w-full h-full object-cover opacity-15"
